@@ -65,5 +65,9 @@ RUN chown -R app:app $APP_HOME
 # change to the app user
 USER app
 
+# set env vars
+ENV FLASK_APP=project/__init__.py
+ENV DATABASE=postgres
+
 # run entrypoint.sh
 ENTRYPOINT ["/home/app/api/entrypoint.sh"]
