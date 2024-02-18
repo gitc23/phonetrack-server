@@ -12,12 +12,45 @@ phonetrack-server is a simple API endpoint which allows you to store the client'
 ## Installation
 Use the pre-built image on Docker Hub [`gitc23/phonetrack-server`](https://hub.docker.com/r/gitc23/phonetrack-server) and connect it to a PostgreSQL database with PostGIS enabled.
 
+For nginx to work, you need to have a folder with at least `nginx.conf` present. Copy the sample config to get started right away. If you want to allow only specific clients to be able to connect to the server, uncomment the respective lines in `nginx.conf` and add them to the `allow-list.conf`.
+
+### Using an existing PostgreSQL database
+
+```yaml
+services:
+  api:
+    build: 
+      context: ./services/api
+      dockerfile: Dockerfile
+    command: gunicorn --bind 0.0.0.0:5000 manage:app
+    expose:
+      - 5000
+    environment:
+      - SQL_HOST=host
+      - SQL_PORT=port
+      # use host.docker.internal in URL if connecting to a database on the same machine
+      - DATABASE_URL=postgresql://user:password@host:port/dbname
+      - DISTANCE_THRESHOLD=500
+      - TIME_THRESHOLD=900
+  nginx:
+    image: nginx:1.25
+    volumes:
+      - ./services/nginx:/etc/nginx/conf.d
+    ports:
+      - 8080:80
+    depends_on:
+      - api
+```
+
+### Using the PostGIS Docker image
 ```yaml
 version: '3.8'
 
 services:
   api:
-    image: gitc23/phonetrack-server
+    build: 
+      context: ./services/api
+      dockerfile: Dockerfile
     command: gunicorn --bind 0.0.0.0:5000 manage:app
     expose:
       - 5000
@@ -38,9 +71,9 @@ services:
       - POSTGRES_PASSWORD=PG_PASSWORD
       - POSTGRES_DB=phonetrack-server
   nginx:
-    image: gitc23/phonetrack-server:nginx
+    image: nginx:1.25
     volumes:
-      - ./nginx/allow-list.conf:/etc/nginx/conf.d/allow-list.conf
+      - ./services/nginx:/etc/nginx/conf.d
     ports:
       - 8080:80
     depends_on:
@@ -50,16 +83,7 @@ volumes:
   postgres_data:
 ```
 
-After running `docker-compose up -d`, create the initial database:
-```shell
-docker-compose exec api python manage.py create_db
-```
-
-You can now connect to it using the credentials set in the `ENV` parameters
-```shell
-docker-compose exec db psql --username=PG_USER --dbname=POSTGRES_DB
-```
-
+### Using the PostGIS image with an SQL dump
 If you have an existing database dump you would like to use, supply it as an additional volume mount of the db image
 ```yaml
   ...
@@ -81,6 +105,16 @@ Check the last lines of your dump file contain the last value of your id column,
 --
 
 SELECT pg_catalog.setval('public.points_id_seq', lastval_of_id_column, true);
+```
+
+After running `docker-compose up -d`, create the initial database:
+```shell
+docker-compose exec api python manage.py create_db
+```
+
+You can now connect to it using the credentials set in the `ENV` parameters of the api image:
+```shell
+docker-compose exec db psql --username=PG_USER --dbname=POSTGRES_DB
 ```
 
 ## Receiving Data
