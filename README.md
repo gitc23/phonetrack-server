@@ -26,9 +26,9 @@ services:
     expose:
       - 5000
     environment:
+    # use host.docker.internal in URL and as SQL_HOST if the database is on the same machine
       - SQL_HOST=host
       - SQL_PORT=port
-      # use host.docker.internal in URL if connecting to a database on the same machine
       - DATABASE_URL=postgresql://user:password@host:port/dbname
       - DISTANCE_THRESHOLD=500
       - TIME_THRESHOLD=900
