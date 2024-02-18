@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  api:
+    build: 
+      context: ./services/api
+      dockerfile: Dockerfile
+    command: gunicorn --bind 0.0.0.0:5000 manage:app
+    expose:
+      - 5000
+    environment:
+      # use host.docker.internal in URL and as SQL_HOST if the database is on the same machine
+      - SQL_HOST=host
+      - SQL_PORT=port
+      - DATABASE_URL=postgresql://user:password@host:port/dbname
+      - DISTANCE_THRESHOLD=500
+      - TIME_THRESHOLD=900
+  nginx:
+    image: nginx:1.25
+    volumes:
+      - ./services/nginx:/etc/nginx/conf.d
+    ports:
+      - 8080:80
+    depends_on:
+      - api
