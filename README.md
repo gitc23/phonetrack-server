@@ -17,6 +17,8 @@ For nginx to work, you need to have a folder with at least `nginx.conf` present.
 ### Using an existing PostgreSQL database
 
 ```yaml
+version: '3.8'
+
 services:
   api:
     build: 
@@ -26,7 +28,7 @@ services:
     expose:
       - 5000
     environment:
-    # use host.docker.internal in URL and as SQL_HOST if the database is on the same machine
+        # use host.docker.internal in URL and as SQL_HOST if the database is on the same machine
       - SQL_HOST=host
       - SQL_PORT=port
       - DATABASE_URL=postgresql://user:password@host:port/dbname
