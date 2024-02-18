@@ -83,7 +83,17 @@ volumes:
   postgres_data:
 ```
 
-### Using the PostGIS image with an SQL dump
+After running `docker-compose up -d`, create the initial database:
+```shell
+docker-compose exec api python manage.py create_db
+```
+
+You can now connect to it using the credentials set in the `ENV` parameters of the api image:
+```shell
+docker-compose exec db psql --username=PG_USER --dbname=POSTGRES_DB
+```
+
+#### Using the PostGIS image with an SQL dump
 If you have an existing database dump you would like to use, supply it as an additional volume mount of the db image
 ```yaml
   ...
@@ -105,16 +115,6 @@ Check the last lines of your dump file contain the last value of your id column,
 --
 
 SELECT pg_catalog.setval('public.points_id_seq', lastval_of_id_column, true);
-```
-
-After running `docker-compose up -d`, create the initial database:
-```shell
-docker-compose exec api python manage.py create_db
-```
-
-You can now connect to it using the credentials set in the `ENV` parameters of the api image:
-```shell
-docker-compose exec db psql --username=PG_USER --dbname=POSTGRES_DB
 ```
 
 ## Receiving Data
