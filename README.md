@@ -44,6 +44,8 @@ services:
       - api
 ```
 
+Then simply run `docker-compose up -d`.
+
 ### Using the PostGIS Docker image
 ```yaml
 version: '3.8'
@@ -126,6 +128,6 @@ Set this as `Target address` in the Phonetrack app on your client device:
 ```
 http://HOST:PORT/post?lat=%LAT&lon=%LON&tst=%TIMESTAMP&alt=%ALT&acc=%ACC&vel=%SPD&sat=%SAT&batt=%BATT&tid=%UA
 ```
-For the endpoint to work, you need at least `LAT`, `LON` and `TIMESTAMP`.
+For the endpoint to work, you need at least `LAT`, `LON` and `TIMESTAMP` with the respecitve keys `lat`, `lon`, and `tst`.
 
 Enable `Use POST method` and you should be good to go.
