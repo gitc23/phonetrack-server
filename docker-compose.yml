@@ -9,12 +9,9 @@ services:
     expose:
       - 5000
     environment:
-      - FLASK_APP=project/__init__.py
-      - FLASK_DEBUG=0
-      - DATABASE_URL=postgresql://PG_USER:PG_PASSWORD@db:5432/phonetrack-server
       - SQL_HOST=db
       - SQL_PORT=5432
-      - DATABASE=postgres
+      - DATABASE_URL=postgresql://PG_USER:PG_PASSWORD@db:5432/phonetrack-server
       - DISTANCE_THRESHOLD=500
       - TIME_THRESHOLD=900
     depends_on:
@@ -28,9 +25,9 @@ services:
       - POSTGRES_PASSWORD=PG_PASSWORD
       - POSTGRES_DB=phonetrack-server
   nginx:
-    build: ./services/nginx
+    image: nginx:1.25
     volumes:
-      - ./services/nginx/allow-list.conf:/etc/nginx/conf.d/allow-list.conf
+      - ./services/nginx:/etc/nginx/conf.d
     ports:
       - 8080:80
     depends_on:
